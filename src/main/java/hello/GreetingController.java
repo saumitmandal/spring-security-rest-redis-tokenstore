@@ -18,11 +18,7 @@ package hello;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,19 +31,6 @@ public class GreetingController {
 
 	@RequestMapping("/greeting")
 	public Greeting greeting(@RequestParam String name) {
-		System.out.println("\n\n\n\n Inside Greetings controller \n\n\n\n");
-		return new Greeting(counter.incrementAndGet(),
-				String.format(template, name));
-	}
-
-
-	@RequestMapping(value="/logoutxx", method = RequestMethod.GET)
-	public String logoutPage () {
-		System.out.println("\n\n\n Logout called \n\n\n\n");
-	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    if (auth != null){
-	        new SecurityContextLogoutHandler().setClearAuthentication(true);
-	    }
-	    return "Hello Logout!!!"; //You can redirect wherever you want, but generally it's a good practice to show login screen again.
+		return new Greeting(counter.incrementAndGet(), String.format(template, name));
 	}
 }

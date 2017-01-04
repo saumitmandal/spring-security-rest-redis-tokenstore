@@ -40,93 +40,57 @@ public class OAuth2ServerConfiguration {
 
 	@Configuration
 	@EnableResourceServer
-	protected static class ResourceServerConfiguration extends
-			ResourceServerConfigurerAdapter {
+	protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
 		@Override
 		public void configure(ResourceServerSecurityConfigurer resources) {
 			// @formatter:off
-			System.out.println("\n\n\nResource server configure called for resource method");
-			resources
-				.resourceId(RESOURCE_ID);
+			resources.resourceId(RESOURCE_ID);
 			// @formatter:on
 		}
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-			System.out.println("\n\n\nResource server configure called of HTTP protocol \n\n");
-			http
-				.authorizeRequests()
-					.antMatchers("/users").hasRole("ADMIN")
-					.antMatchers("/greeting").authenticated();
+			http.authorizeRequests().antMatchers("/users").hasRole("ADMIN").antMatchers("/greeting").authenticated();
 			// @formatter:on
 		}
 	}
 
 	@Configuration
 	@EnableAuthorizationServer
-	protected static class AuthorizationServerConfiguration extends
-			AuthorizationServerConfigurerAdapter {
-
-		//private TokenStore tokenStore = new InMemoryTokenStore();
+	protected static class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
 		@Autowired
 		@Qualifier("authenticationManagerBean")
 		private AuthenticationManager authenticationManager;
 
-		
-//		@Autowired
-//		private RedisConnectionFactory redisConnectionFactory;
-
 		@Autowired
 		private TokenStore tokenStore;
-		
-//		private TokenStore tokenStore = new InMemoryTokenStore();
-//		private TokenStore tokenStore = new RedisTokenStore(redisConnectionFactory);
-
-		
-//		@Autowired
-//		private CustomUserDetailsService userDetailsService;
 
 		@Override
-		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-				throws Exception {
+		public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 			// @formatter:off
-			System.out.println("\n\n@EnableAuthorizationServer configure endpoint called \n\n");
-			endpoints
-				.tokenStore(this.tokenStore)
-				.authenticationManager(this.authenticationManager).authenticationManager(authenticationManager);
-				//.userDetailsService(userDetailsService);
+			endpoints.tokenStore(this.tokenStore).authenticationManager(this.authenticationManager);
 			// @formatter:on
 		}
 
 		@Override
 		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 			// @formatter:off
-			System.out.println("\n\n\n@EnableAuthorizationServer configure called.");
-			clients
-				.inMemory()
-					.withClient("clientapp")
-						.authorizedGrantTypes("password", "refresh_token")
-						.authorities("USER")
-						.scopes("read", "write")
-						.resourceIds(RESOURCE_ID)
-						.secret("123456")
-						.accessTokenValiditySeconds(300);
+			clients.inMemory().withClient("clientapp").authorizedGrantTypes("password", "refresh_token")
+					.authorities("USER").scopes("read", "write").resourceIds(RESOURCE_ID).secret("123456")
+					.accessTokenValiditySeconds(300);
 			// @formatter:on
 		}
 
 		@Bean
 		@Primary
 		public DefaultTokenServices tokenServices() {
-			System.out.println("\n\n\n Default Token service tokenService called \n\n");
 			DefaultTokenServices tokenServices = new DefaultTokenServices();
 			tokenServices.setSupportRefreshToken(true);
 			tokenServices.setTokenStore(this.tokenStore);
 			return tokenServices;
 		}
-
 	}
-
 }

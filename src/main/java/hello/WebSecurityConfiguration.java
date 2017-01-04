@@ -32,7 +32,7 @@ import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
-import com.personal.service.MyAuthenticationProvider;
+import com.personal.service.CustomAuthenticationProvider;
 
 import hello.data.UserRepository;
 
@@ -40,26 +40,11 @@ import hello.data.UserRepository;
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-//	@Autowired
-//	private CustomUserDetailsService userDetailsService;
-	
-	//@Autowired
-    //private MyAuthenticationProvider authenticationProvider = new MyAuthenticationProvider();
-	
-	
-	
-	
-    private MyAuthenticationProvider authenticationProvider = new MyAuthenticationProvider();
+    private CustomAuthenticationProvider authenticationProvider = new CustomAuthenticationProvider();
     
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http
-//        .csrf().disable()
-//        .anonymous().disable()
-//        .authorizeRequests()
-//        .antMatchers("/oauth/token").permitAll();
-    	
     	http
         .httpBasic().and()
         .authorizeRequests()
@@ -71,15 +56,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 	
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		System.out.println("\n \n \n \n WebSecurityConfiguration called");
-		 //auth.userDetailsService(userDetailsService);
 		auth.authenticationProvider(authenticationProvider);
 	}
 
 	@Override
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception {
-		System.out.println("\n\n\n AuthenticationManager authenticationManagerBean called....");
 		return super.authenticationManagerBean();
 	}
 
@@ -89,7 +71,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Bean
     public TokenStore tokenStore() {
-		System.out.println("\n\n\nToken Store configured with redis\n\n");
         return new RedisTokenStore(this.redisConnectionfactory);
     }
 	
@@ -111,7 +92,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     @Autowired
     public ApprovalStore approvalStore(TokenStore tokenStore) throws Exception {
-    	System.out.println("\n\n\nApprovalStore approvalStore\n\n\n");
         TokenApprovalStore store = new TokenApprovalStore();
         store.setTokenStore(tokenStore);
         return store;

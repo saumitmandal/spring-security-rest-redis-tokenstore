@@ -19,34 +19,28 @@ import hello.data.User;
 import hello.data.UserRepository;
 
 @Service
-public class MyAuthenticationProvider implements AuthenticationProvider, Serializable {
+public class CustomAuthenticationProvider implements AuthenticationProvider, Serializable {
 
-	
-	
 	@Autowired
 	private UserRepository userRepository;
 
-	private boolean validateUserName(String userName){
-		System.out.println("\n\n\n User name passed - "+userName+"\n\n\n");
-		
+	private boolean validateUserName(String userName) {
 		User user = userRepository.findByLogin(userName);
-		System.out.println("\n\n User fetched - "+user.getName()+"\n\n\n");
 		return user != null;
 	}
-	
+
 	@SuppressWarnings("serial")
 	private static Map<String, String> SIMPLE_USERS = new HashMap<String, String>(2) {
 		{
 			put("joe", "joe");
 			put("bob", "bob");
-			put("sam","sam");
+			put("sam", "sam");
 		}
 	};
 
 	@SuppressWarnings("serial")
 	private static List<GrantedAuthority> AUTHORITIES = new ArrayList<GrantedAuthority>(1) {
 		{
-			// add(new GrantedAuthorityImpl("ROLE_USER"));
 			add(new GrantedAuthority() {
 
 				@Override
@@ -57,14 +51,8 @@ public class MyAuthenticationProvider implements AuthenticationProvider, Seriali
 		}
 	};
 
-	
 	@Override
 	public Authentication authenticate(Authentication auth) throws AuthenticationException {
-		// All your user authentication needs
-		System.out.println("\n\n\n==Authenticate Me==");
-		
-		//System.out.println("validated use from backend database - "+validateUserName(auth.getPrincipal().toString()));
-		
 		if (SIMPLE_USERS.containsKey(auth.getPrincipal())
 				&& SIMPLE_USERS.get(auth.getPrincipal()).equals(auth.getCredentials())) {
 			return new UsernamePasswordAuthenticationToken(auth.getName(), auth.getCredentials(), AUTHORITIES);
@@ -74,8 +62,6 @@ public class MyAuthenticationProvider implements AuthenticationProvider, Seriali
 
 	@Override
 	public boolean supports(Class<?> authentication) {
-		System.out.println("\n \n \n in supports method of MyAuthenticationProvider...........");
 		return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
 	}
-
 }

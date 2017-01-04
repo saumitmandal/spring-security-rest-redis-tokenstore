@@ -18,15 +18,15 @@ package hello;
 
 import java.util.Collection;
 
-import hello.data.User;
-import hello.data.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import hello.data.User;
+import hello.data.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -40,12 +40,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		System.out.println("starting load user details");
-		System.out.println("\n \n userRepository"+ this.userRepository);
-		
 		User user = userRepository.findByLogin(username);
-		System.out.println("\n \n \n Checking user "+user);
-		
+
 		if (user == null) {
 			throw new UsernameNotFoundException(String.format("User %s does not exist!", username));
 		}
